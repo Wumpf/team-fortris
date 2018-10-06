@@ -6,7 +6,7 @@
         {
             "label": "CMake & Make & Run",
             "type": "shell",
-            "command": "mkdir -Force build; cd build; cmake -G 'MinGW Makefiles' ..; mingw32-make; ./team-fortris",
+            "command": "mkdir -Force build; cd build; cmake -G 'MinGW Makefiles' ..; mingw32-make; if ($?) { ./team-fortris }",
             "group": {
                 "kind": "build",
                 "isDefault": true
