@@ -11,7 +11,6 @@
       type(c_ptr) window
       type(SDL_Event) event
       integer sdlres
-      logical quit
       
 
 c     Import SDL functions
@@ -25,13 +24,6 @@ c     Import SDL functions
 
             subroutine SDL_Quit() bind(c, name='SDL_Quit')
             end subroutine SDL_Quit
-
-            function SDL_GetRevisionNumber()
-     +        bind(c, name='SDL_GetRevisionNumber')
-                  use iso_c_binding
-                  implicit none
-                  integer(c_int) :: SDL_GetRevisionNumber
-            end function SDL_GetRevisionNumber
             
             subroutine SDL_DestroyWindow(window)
      +        bind(c, name='SDL_DestroyWindow')
@@ -58,7 +50,6 @@ c     Import SDL functions
                   use iso_c_binding
                   import :: SDL_Event
                   implicit none
-
                   type(SDL_Event), intent(out) :: event
                   integer(c_int) :: SDL_PollEvent
             end function SDL_PollEvent
@@ -66,9 +57,7 @@ c     Import SDL functions
 
 c     Init SDL with (SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER)
       sdlres = SDL_Init(8225)
-      write(*, '(i0)') SDL_GetRevisionNumber()
       window = SDL_CreateWindow('some title', 100, 100, 1024, 768, 0)
-      quit = .false.
       
 c     Gameloop & message pump
    10 continue
