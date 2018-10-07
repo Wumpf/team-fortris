@@ -56,13 +56,8 @@ c     Import SDL functions
             function SDL_PollEvent(event)
      +        bind(c, name='SDL_PollEvent')
                   use iso_c_binding
+                  import :: SDL_Event
                   implicit none
-
-                  type, bind(c) :: SDL_Event
-                        integer(c_int32_t) :: etype
-                        integer(c_int32_t) :: timestamp
-                        integer(c_int8_t) :: data(48)
-                  end type SDL_Event
 
                   type(SDL_Event), intent(out) :: event
                   integer(c_int) :: SDL_PollEvent
