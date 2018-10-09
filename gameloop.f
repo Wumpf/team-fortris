@@ -22,22 +22,22 @@ c     Init SDL with (SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER)
 
 c     Gameloop & message pump
    10 continue
-c           Consume all messages
-   20       sdlres = SDL_PollEvent(event)
-            if (sdlres .ne. 0) then
-c                 Quit received
-                  if (event%etype .eq. 256) goto 30
-                  goto 20
-            endif
+c       Consume all messages
+   20   sdlres = SDL_PollEvent(event)
+        if (sdlres .ne. 0) then
+c         Quit received
+          if (event%etype .eq. 256) goto 30
+          goto 20
+        endif
 
-c           Determine whether it is time to do a tick
-            call cpu_time(tCur)
-            if (tCur - tLstTk >= tkLen) then 
-                  tLstTk = tLstTk + tkLen
-                  tkIdx = tkIdx + 1
-                  call update(tkIdx)
-                  call render(tkIdx)
-            endif
+c       Determine whether it is time to do a tick
+        call cpu_time(tCur)
+        if (tCur - tLstTk >= tkLen) then 
+          tLstTk = tLstTk + tkLen
+          tkIdx = tkIdx + 1
+          call update(tkIdx)
+          call render(tkIdx)
+        endif
 
 c     TODO: Update, render, present
       goto 10
