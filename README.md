@@ -4,8 +4,8 @@
 
 This project is as much about trying a simple game idea as about learning Fortran 77.  
 Since it it surprisingly hard to get a F77 compiler on Windows these days we use Mingw/GCC's gfortran which only supports >=F95.
-Inevitably we drag in F03 features, but the SDL C bindings we need wouldn't be feasible anyways (at least not without compiler extensions).  
-So instead we just modified a few compiler settings to get closer to that dusty F77 feel (most notably using fixed form code)
+Also, proper C bindings are only available with F03 so we're sort of stuck with that as well. And F90's modules are also quite convenient for building the whole thing...  
+So instead we just try to limit ourselves here a bit by using fixed form and avoiding some of the nice features.
 
 Some useful resources that help(ed) us on this adventure:
 * https://web.stanford.edu/class/me200c/tutorial_77/
