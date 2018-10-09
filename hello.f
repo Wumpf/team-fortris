@@ -10,7 +10,7 @@
 
 c     Init SDL with (SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER)
       sdlres = SDL_Init(8225)
-      window = SDL_CreateWindow('some title', 100, 100, 1024, 768, 0)
+      window = SDL_CreateWindow('Team Fortris', 100, 100, 1024, 768, 0)
 
       
 c     Gameloop & message pump
