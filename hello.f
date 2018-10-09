@@ -1,7 +1,6 @@
       program main
       use iso_c_binding
       use sdl2
-      implicit none
 
       type(c_ptr) window
       type(SDL_Event) event

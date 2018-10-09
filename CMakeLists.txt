@@ -8,7 +8,7 @@ endif()
 
 # Can't do F77 with gfortan, but we can get a bit closer with these dialect options.
 # F77 allows only 6 chars for variables. We can't do that here since gfortran applies this rules to keywords as well. So we go with F95's 31
-set(dialect "-ffixed-form -std=legacy -ffixed-line-length-72 -fmax-identifier-length=31")
+set(dialect "-ffixed-form -std=f2003 -ffixed-line-length-72 -fmax-identifier-length=31 -fimplicit-none")
 set(warnings "-Wpedantic -Wall")
 set(checks "-fbounds-check")
 set(stripping "-Wl,--exclude-libs,ALL -fvisibility=hidden -s")
