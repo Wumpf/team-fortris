@@ -42,6 +42,34 @@
           type(SDL_Event), intent(out) :: event
           integer(c_int) :: SDL_PollEvent
         end function SDL_PollEvent
+
+        function SDL_CreateRenderer(window, index, flags)
+     +      bind(c, name='SDL_CreateRenderer')
+          use iso_c_binding
+          type(c_ptr), value :: window
+          integer(c_int), value :: index
+          integer(c_int32_t), value :: flags
+          type(c_ptr) :: SDL_CreateRenderer
+        end function SDL_CreateRenderer
+
+        subroutine SDL_DestroyRenderer(renderer)
+     +      bind(c, name='SDL_DestroyRenderer')
+          use iso_c_binding
+          type(c_ptr), value :: renderer
+        end subroutine SDL_DestroyRenderer
+
+        function SDL_RenderClear(renderer)
+     +      bind(c, name='SDL_RenderClear')
+          use iso_c_binding
+          type(c_ptr), value :: renderer
+          integer(c_int) :: SDL_RenderClear
+        end function SDL_RenderClear
+
+        subroutine SDL_RenderPresent(renderer)
+     +      bind(c, name='SDL_RenderPresent')
+          use iso_c_binding
+          type(c_ptr), value :: renderer
+        end subroutine SDL_RenderPresent
       end interface
 
       end module sdl2

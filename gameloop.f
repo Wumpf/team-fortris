@@ -2,7 +2,7 @@
       use iso_c_binding
       use sdl2
 
-      type(c_ptr) window
+      type(c_ptr) window, rnd
       type(SDL_Event) event
       integer sdlres
 
@@ -16,8 +16,11 @@
 c     Init SDL with (SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER)
       sdlres = SDL_Init(8225)
       window = SDL_CreateWindow('Team Fortris', 100, 100, 1024, 768, 0)
+c     Init renderer with SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
+      rnd = SDL_CreateRenderer(window, -1, 6);
 
-      call cpu_time(tLstTk)
+
+      tLstTk = -1
       tkIdx = 0
 
 c     Gameloop & message pump
@@ -36,13 +39,14 @@ c       Determine whether it is time to do a tick
           tLstTk = tLstTk + tkLen
           tkIdx = tkIdx + 1
           call update(tkIdx)
-          call render(tkIdx)
+          call render(rnd, tkIdx)
         endif
 
 c     TODO: Update, render, present
       goto 10
 
-   30 call SDL_DestroyWindow(window)
+   30 call SDL_DestroyRenderer(rnd)
+      call SDL_DestroyWindow(window)
       call SDL_Quit()
       stop
       end program
