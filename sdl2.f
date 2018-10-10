@@ -7,6 +7,13 @@
         integer(c_int8_t) :: data(48)
       end type SDL_Event
 
+      type, bind(c) :: SDL_Rect
+        integer(c_int) :: x
+        integer(c_int) :: y
+        integer(c_int) :: w
+        integer(c_int) :: h
+      end type SDL_Rect
+
       interface
         function SDL_Init(flags) bind(c, name='SDL_Init')
             use iso_c_binding
@@ -70,6 +77,28 @@
           use iso_c_binding
           type(c_ptr), value :: renderer
         end subroutine SDL_RenderPresent
+
+        function SDL_RenderFillRects(renderer, rects, count)
+     +      bind(c, name='SDL_RenderFillRects')
+          use iso_c_binding
+          import :: SDL_Rect
+          type(c_ptr), value :: renderer
+          type(SDL_Rect), intent(in) :: rects(*)
+          integer(c_int), value :: count
+          integer(c_int) :: SDL_RenderFillRects
+        end function SDL_RenderFillRects
+
+        function SDL_SetRenderDrawColor(renderer, r, g, b, a)
+     +      bind(c, name='SDL_SetRenderDrawColor')
+          use iso_c_binding
+          type(c_ptr), value :: renderer
+          integer(c_int8_t), value :: r
+          integer(c_int8_t), value :: g
+          integer(c_int8_t), value :: b
+          integer(c_int8_t), value :: a
+          integer(c_int) :: SDL_SetRenderDrawColor
+        end function SDL_SetRenderDrawColor
+
       end interface
 
       end module sdl2
