@@ -1,0 +1,32 @@
+Game
+  common /gState/
+    Fld (int array for different states/colors)
+        1 background
+        7 blocks
+        1 wall
+
+    FldSz (int[2])
+    
+    BlkFld (int 2x 4x4)
+    BlkPos (int 2x 2)
+
+
+  Functions
+    Update(int tickNr, )
+
+    GetRandomBlock
+    RotateBlock
+    Input
+
+
+
+
+Dark grey first full line
+each full line gets grey, moves field to other side
+    Change to "blink color" (++ until grey is reached) then "grey color"
+
+
+
+Bonus:
+    System beep "music"
+    Resizable window
