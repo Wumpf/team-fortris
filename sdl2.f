@@ -99,6 +99,14 @@
           integer(c_int) :: SDL_SetRenderDrawColor
         end function SDL_SetRenderDrawColor
 
+c       For scan code lookup check https://www.libsdl.org/tmp/SDL/include/SDL_scancode.h
+        function SDL_GetKeyboardState(numkeys)
+     +       bind(c, name='SDL_GetKeyboardState')
+          use iso_c_binding
+          integer(c_int), intent(out) :: numkeys
+          type(c_ptr) :: SDL_GetKeyboardState
+        end function SDL_GetKeyboardState
+
       end interface
 
       end module sdl2
