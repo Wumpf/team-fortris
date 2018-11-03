@@ -2,6 +2,8 @@
       use iso_c_binding
       use sdl2
 
+      include 'state.h'
+
       type(c_ptr) :: rnd
       integer :: tkIdx
 
@@ -10,7 +12,7 @@
       integer(1) colors(4, 2)
       data colors/0, 0, 0, -1, -1, 0, 0, -1/
 
-      rects(1)%x = 0
+      rects(1)%x = Fld(1,1)
       rects(1)%y = 0
       rects(1)%w = 100
       rects(1)%h = 100

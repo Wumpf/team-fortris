@@ -11,7 +11,7 @@
       real tkLen
       parameter(tklen = 0.2) ! Tick duration in seconds
 
-      external update, render
+      external gameupdate, render
 
 c     Init SDL with (SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER)
       sdlres = SDL_Init(8225)
@@ -35,10 +35,10 @@ c         Quit received
 
 c       Determine whether it is time to do a tick
         call cpu_time(tCur)
-        if (tCur - tLstTk >= tkLen) then 
+        if (tCur - tLstTk .ge. tkLen) then 
           tLstTk = tLstTk + tkLen
           tkIdx = tkIdx + 1
-          call update(tkIdx)
+          call gameupdate(tkIdx)
           call render(rnd, tkIdx)
         endif
 
