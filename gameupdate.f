@@ -47,10 +47,20 @@ c#######################################################################
 c     ------------------------------------------------------------------
 c     Rotating
         if (is_key_down(4)) then
-          BlkRot(1) = .true.
+          if (.not. RotDwn(1)) then
+            BlkRot(1) = .true.
+          endif
+          RotDwn(1) = .true.
+        else
+          RotDwn(1) = .false.
         endif
         if (is_key_down(79)) then
-          BlkRot(2) = .true.
+          if (.not. RotDwn(2)) then
+            BlkRot(2) = .true.
+          endif
+          RotDwn(2) = .true.
+        else
+          RotDwn(2) = .false.
         endif
 
 c     Up/down
@@ -79,27 +89,18 @@ c     Speedup
 c#######################################################################
       subroutine new_tet(player)
         integer :: player
-        integer :: tx, ty
         include 'state.h'
 c       Shape of the tetrominos. Add more later.
         integer :: tetBlk(-2:2, -2:2, 1)
-        data tetBlk/0,0,0,0,0,
-     +              0,0,0,0,0,
-     +              0,1,1,1,1,
-     +              0,0,0,0,0,
+        data tetBlk/0,0,1,0,0,
+     +              0,0,1,0,0,
+     +              0,0,1,0,0,
+     +              0,0,1,0,0,
      +              0,0,0,0,0/
 c     ------------------------------------------------------------------
-        tx = -2
- 20     if (tx .le. 2) then
-          ty = -2
- 30       if (ty .le. 2) then
-            TetFld(ty, tx, player) = tetBlk(ty, tx, 1)
-            ty = ty + 1
-            goto 30
-          endif
-          tx = tx + 1
-          goto 20
-        endif
+
+        TetFld(:, :, player) = tetBlk(:, :, 1)
+
 
         if (player .eq. 1) then
           TetPos(1,1) = size(Fld, 1)/2 + 1
@@ -126,11 +127,10 @@ c     ------------------------------------------------------------------
             if ((tet(ty, tx) .eq. 0)) then
               goto 40
             endif
-            if (y + ty .gt. size(Fld, 1)) then
-c            .or.
-c     +          y + ty .le. 0 .or.
-c     +          x + tx .gt. size(Fld, 2)
-c     +          x + tx .le. 0) then
+            if (y + ty .gt. size(Fld, 1) .or.
+     +          y + ty .le. 0 .or.
+     +          x + tx .gt. size(Fld, 2) .or.
+     +          x + tx .le. 0) then
               check_tet = .false.
               return
             endif
@@ -147,8 +147,23 @@ c     +          x + tx .le. 0) then
         check_tet = .true.
       end function
 c#######################################################################
-      subroutine rotate_tet(player)
+      subroutine rotate_tet(player, result)
         integer :: player
+        integer :: result(-2:2, -2:2)
+        integer :: tx, ty
+        include 'state.h'
+c     ------------------------------------------------------------------
+        tx = -2
+ 20     if (tx .le. 2) then
+          ty = -2
+ 30       if (ty .le. 2) then
+            result(ty, tx) = TetFld(tx, -ty, player)
+            ty = ty + 1
+            goto 30
+          endif
+          tx = tx + 1
+          goto 20
+        endif
       end subroutine rotate_tet
 c#######################################################################
       subroutine arrive_tet(player)
@@ -178,22 +193,38 @@ c#######################################################################
         integer :: tkIdx
         include 'state.h'
         logical :: is_key_down
-        logical ::check_tet
+        logical :: check_tet
         integer :: player
         integer :: x, y, tx, ty
+        integer :: rotTet(-2:2, -2:2)
 c     ------------------------------------------------------------------       
         player = 1
  10     if (player .le. 2) then
+
+          if (BlkMov(player) .ne. 0) then
+            if (check_tet(TetFld(:,:,player),
+     +                    TetPos(2, player),
+     +                    TetPos(1, player) + BlkMov(player))) then
+              TetPos(1, player) = TetPos(1, player) + BlkMov(player)
+            endif
+            BlkMov(player) = 0
+          endif
+
+          if (BlkRot(player)) then
+            call rotate_tet(player, rotTet)
+            if (check_tet(rotTet,
+     +                    TetPos(2, player),
+     +                    TetPos(1, player))) then
+              TetFld(:,:,player) = rotTet
+            endif
+            BlkRot(player) = .false.
+          endif
 
 c         Updating?
           if ((mod(tkIdx, 2) .eq. 0) .or. BlkSpd(player)) then
             if (TetPos(1, player) - 2 .ge. 1 .and.
      +          TetPos(1, player) + 2 .le. size(Fld, 1)) then
 
-            endif
-
-            if (BlkRot(player)) then
-              call rotate_tet(player)
             endif
 
             x = TetPos(2, player) + 3 - 2*player
@@ -214,12 +245,4 @@ c           Reset input
         endif
 
         Fld(1,1) = 4
-
-        if (is_key_down(79)) then
-          Fld(4,4) = 4
-        endif
-        if (is_key_down(80)) then
-          Fld(1,1) = 5
-        endif
-
       end subroutine gameupdate

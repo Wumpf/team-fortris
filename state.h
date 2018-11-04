@@ -7,7 +7,8 @@ c     Last index is the player id
       integer :: BlkMov(2)
       logical :: BlkSpd(2)
       logical :: BlkRot(2)
-      common /gInput/ BlkMov, BlkSpd, BlkRot
+      logical :: RotDwn(2)
+      common /gInput/ BlkMov, BlkSpd, BlkRot, RotDwn
 
 c     Block enum
       integer :: blkNON,
