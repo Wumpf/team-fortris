@@ -25,6 +25,7 @@ c     but for simplicity we do everything one by one every frame.
       type(c_ptr) :: rnd
       integer :: x, y
       include 'state.h'
+      include 'screenstate.h'
       integer result
       type(SDL_Rect) rects(1)
 c     Colors for IOTSZJL, fix
@@ -37,9 +38,6 @@ c     Colors for IOTSZJL, fix
      +            0, 0, -1, -1,
      +            -1, 100, 0, -1,
      +            100, 100, 100, -1/
-
-      integer RectSz
-      parameter(RectSz = 20)  ! todo: get dynamically
 c     ------------------------------------------------------------------
       if (Fld(y, x) .eq. blkNON) then
         return
@@ -51,11 +49,11 @@ c     Render rectangle
      +  colors(2, Fld(y, x)),
      +  colors(3, Fld(y, x)),
      +  colors(4, Fld(y, x)))
-  
-      rects(1)%x = (x-1) * RectSz
-      rects(1)%y = (y-1) * RectSz
-      rects(1)%w = RectSz
-      rects(1)%h = RectSz
+
+      rects(1)%x = (x-1) * BlkSz + FldTLX
+      rects(1)%y = (y-1) * BlkSz + FldTLY
+      rects(1)%w = BlkSz
+      rects(1)%h = BlkSz
 
       result = SDL_RenderFillRects(rnd, rects, 1)
 
@@ -67,9 +65,6 @@ c#######################################################################
       include 'state.h'
       integer :: x, y
 c     ------------------------------------------------------------------
-
-      call debug_fill_field()
-
       x = 1
  10   if (x .le. size(Fld, 2)) then
         y = 1
@@ -82,6 +77,21 @@ c     ------------------------------------------------------------------
         goto 10
       endif
       end subroutine render_fld
+
+c#######################################################################
+      subroutine update_screen_params(rnd)
+      use iso_c_binding
+      use sdl2
+      type(c_ptr) :: rnd
+      include 'screenstate.h'
+c     ------------------------------------------------------------------
+
+c     TODO
+      FldTLX = 10
+      FldTLY = 10
+      BlkSz = 20
+
+      end subroutine update_screen_params
 c#######################################################################
       subroutine render(rnd, tkIdx)
       use iso_c_binding
@@ -97,6 +107,8 @@ c     ------------------------------------------------------------------
      +    bgCol(1), bgCol(2), bgCol(3), bgCol(4))
       result = SDL_RenderClear(rnd)
 
+      call update_screen_params(rnd)
+      call debug_fill_field()
       call render_fld(rnd)
 
       call SDL_RenderPresent(rnd)
