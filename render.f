@@ -16,6 +16,24 @@ c     ------------------------------------------------------------------
       endif
       end subroutine debug_fill_field
 c#######################################################################
+      subroutine to_byte(ints, bytes, size)
+      integer :: size
+      integer, dimension(1:) :: ints(size)
+      integer(1), dimension(1:) :: bytes(size)
+      integer i
+c     ------------------------------------------------------------------
+      i = 1
+ 10   if (i .le. size) then
+        if (ints(i) .gt. 127) then
+          bytes(i) = int(min(ints(i), 255) - 256, 1)
+        else
+          bytes(i) = int(max(0, ints(i)), 1)
+        endif
+        i = i + 1
+        goto 10
+      endif
+      end subroutine
+c#######################################################################
 c     Renders a single block
 c     Batching blocks of the same color would make this much more efficient,
 c     but for simplicity we do everything one by one every frame.
@@ -28,32 +46,51 @@ c     but for simplicity we do everything one by one every frame.
       integer result
       type(SDL_Rect) rects(1)
 c     Colors for IOTSZJL, fix
-      integer(1) colors(4, 8)
-      data colors/-1, 0, -1, -1,
-     +            -1, -1, 0, -1,
-     +            100, 0, -1, -1,
-     +            0, -1, 0, -1,
-     +            -1, 0, 0, -1,
-     +            0, 0, -1, -1,
-     +            -1, 100, 0, -1,
-     +            100, 100, 100, -1/
+      integer colors(4, 8)
+      data colors/240, 5, 240, 240,
+     +            240, 240, 5, 240,
+     +            127, 5, 240, 240,
+     +            5, 240, 5, 240,
+     +            240, 5, 5, 240,
+     +            5, 5, 240, 240,
+     +            240, 127, 5, 240,
+     +            127, 127, 127, 240/
+      integer(1) colorB(4)
+      real border
+      parameter(border = 0.2)
 c     ------------------------------------------------------------------
       if (blkCol .eq. blkNON) then
         return
       endif
 
-c     Render rectangle
+c     "normal" border, bottom left
+      call to_byte(colors(:, blkCol), colorB, 4)
       result = SDL_SetRenderDrawColor(rnd,
-     +  colors(1, blkCol),
-     +  colors(2, blkCol),
-     +  colors(3, blkCol),
-     +  colors(4, blkCol))
-
+     +  colorB(1), colorB(2), colorB(3), colorB(4))
       rects(1)%x = (x-1) * BlkSz + FldTLX
       rects(1)%y = (y-1) * BlkSz + FldTLY
       rects(1)%w = BlkSz
       rects(1)%h = BlkSz
+      result = SDL_RenderFillRects(rnd, rects, 1)
 
+c     Dark border, top right
+      call to_byte(int(colors(:, blkCol) * 0.8), colorB, 4)
+      result = SDL_SetRenderDrawColor(rnd,
+     +  colorB(1), colorB(2), colorB(3), colorB(4))
+      rects(1)%w = int(BlkSz * (1.0 - border))
+      rects(1)%h = rects(1)%w
+      rects(1)%x = (x-1) * BlkSz + FldTLX + (BlkSz - rects(1)%w)
+      rects(1)%y = (y-1) * BlkSz + FldTLY
+      result = SDL_RenderFillRects(rnd, rects, 1)
+
+c     Bright middle
+      call to_byte(int(colors(:, blkCol) + 60), colorB, 4)
+      result = SDL_SetRenderDrawColor(rnd,
+     +  colorB(1), colorB(2), colorB(3), colorB(4))
+      rects(1)%w = int(BlkSz * (1.0 - border * 2))
+      rects(1)%h = rects(1)%w
+      rects(1)%x = (x-1) * BlkSz + FldTLX + (BlkSz - rects(1)%w) / 2
+      rects(1)%y = (y-1) * BlkSz + FldTLY + (BlkSz - rects(1)%w) / 2
       result = SDL_RenderFillRects(rnd, rects, 1)
 
       end subroutine
