@@ -19,8 +19,8 @@ c     ------------------------------------------------------------------
 c#######################################################################
       subroutine init_field()
         include 'state.h'
-
         integer :: x=1, y=1
+c     ------------------------------------------------------------------
  10     if (x .le. size(Fld, 2)) then
           y = 1
  20       if (y .le. size(Fld, 1)) then
@@ -36,11 +36,6 @@ c#######################################################################
           goto 10
         endif
 
-        TetPos(1,1) = size(Fld, 1)/2 + 1
-        TetPos(2,1) = 3
-        TetPos(1,2) = TetPos(1,1)
-        TetPos(2,2) = size(Fld, 2)-2
-
         call new_tet(1)
         call new_tet(2)
 
@@ -48,9 +43,8 @@ c#######################################################################
 c#######################################################################
       subroutine input_update()
         include 'state.h'
-
         logical :: is_key_down
-
+c     ------------------------------------------------------------------
 c     Rotating
         if (is_key_down(4)) then
           BlkRot(1) = .true.
@@ -81,16 +75,12 @@ c     Speedup
         if (is_key_down(80)) then
           BlkSpd(2) = .true.
         endif
-
-
-
       end subroutine input_update
 c#######################################################################
       subroutine new_tet(player)
         integer :: player
         integer :: tx, ty
         include 'state.h'
-
 c       Shape of the tetrominos. Add more later.
         integer :: tetBlk(-2:2, -2:2, 1)
         data tetBlk/0,0,0,0,0,
@@ -98,7 +88,7 @@ c       Shape of the tetrominos. Add more later.
      +              0,1,1,1,1,
      +              0,0,0,0,0,
      +              0,0,0,0,0/
-
+c     ------------------------------------------------------------------
         tx = -2
  20     if (tx .le. 2) then
           ty = -2
@@ -112,16 +102,24 @@ c       Shape of the tetrominos. Add more later.
           goto 20
         endif
 
+        if (player .eq. 1) then
+          TetPos(1,1) = size(Fld, 1)/2 + 1
+          TetPos(2,1) = 3
+        endif
+        if (player .eq. 2) then
+          TetPos(1,2) = TetPos(1,1)
+          TetPos(2,2) = size(Fld, 2)-2
+        endif
+
       end subroutine new_tet
 c#######################################################################
       subroutine gameupdate(tkIdx)
         integer :: tkIdx
         include 'state.h'
-
         logical :: is_key_down
         integer :: player
         integer :: x, y, tx, ty
-        
+c     ------------------------------------------------------------------       
         player = 1
  10     if (player .le. 2) then
 
