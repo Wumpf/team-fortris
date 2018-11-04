@@ -1,3 +1,4 @@
+c#######################################################################
       program main
       use iso_c_binding
       use sdl2
@@ -12,6 +13,7 @@
       parameter(tklen = 0.2) ! Tick duration in seconds
 
       external gameupdate, render
+c     ------------------------------------------------------------------
 
 c     Init SDL with (SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER)
       sdlres = SDL_Init(8225)
@@ -42,7 +44,6 @@ c       Determine whether it is time to do a tick
           call render(rnd, tkIdx)
         endif
 
-c     TODO: Update, render, present
       goto 10
 
    30 call SDL_DestroyRenderer(rnd)
@@ -50,3 +51,4 @@ c     TODO: Update, render, present
       call SDL_Quit()
       stop
       end program
+c#######################################################################
