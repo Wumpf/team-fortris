@@ -1,8 +1,13 @@
-      integer :: Fld(16, 64)
+      integer :: Fld(16, 33)
 c     Last index is the player id 
       integer :: TetPos(2,2)
-      integer :: TetFld(4,4,2)
-      common /gState/ Fld, TetPos, TetFld 
+      integer :: TetFld(-2:2, -2:2, 2)
+      common /gState/ Fld, TetPos, TetFld
+
+      integer :: BlkMov(2)
+      logical :: BlkSpd(2)
+      logical :: BlkRot(2)
+      common /gInput/ BlkMov, BlkSpd, BlkRot
 
 c     Block enum
       integer :: blkNON,

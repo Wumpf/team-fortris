@@ -76,7 +76,6 @@ c     ------------------------------------------------------------------
         goto 10
       endif
       end subroutine render_fld
-
 c#######################################################################
       subroutine update_screen_params(rnd)
       use sdl2

@@ -2,5 +2,6 @@
     "editor.rulers" : [1, 5, 6, 72, 80],
     "files.associations": {
         "*.h": "fortran_fixed-form"
-    }
+    },
+    "cmake.configureOnOpen": false
 }
