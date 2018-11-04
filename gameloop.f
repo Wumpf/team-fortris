@@ -12,7 +12,7 @@ c#######################################################################
       real tkLen
       parameter(tklen = 0.2) ! Tick duration in seconds
 
-      external gameupdate, render
+      external gameupdate, render, init_field
 c     ------------------------------------------------------------------
 
 c     Init SDL with (SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER)
@@ -21,6 +21,7 @@ c     Init SDL with (SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER)
 c     Init renderer with SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
       rnd = SDL_CreateRenderer(window, -1, 6);
 
+      call init_field()
 
       tLstTk = -1
       tkIdx = 0

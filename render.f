@@ -108,7 +108,7 @@ c     ------------------------------------------------------------------
       result = SDL_RenderClear(rnd)
 
       call update_screen_params(rnd)
-      call debug_fill_field()
+c     call debug_fill_field()
       call render_fld(rnd)
 
       call SDL_RenderPresent(rnd)
