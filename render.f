@@ -42,8 +42,6 @@ c     ------------------------------------------------------------------
         return
       endif
 
-      write(*,*) 'render!'
-
 c     Render rectangle
       result = SDL_SetRenderDrawColor(rnd,
      +  colors(1, blkCol),
@@ -112,7 +110,7 @@ c     ------------------------------------------------------------------
       fldSzY = size(Fld, 1)
       result = SDL_GetRendererOutputSize(rnd, w, h)
 
-      BlkSz = min(w / fldSzX, w / fldSzY)
+      BlkSz = min(w / fldSzX, h / fldSzY)
       FldTLX = (w - fldSzX * BlkSz) / 2
       FldTLY = (h - fldSzY * BlkSz) / 2
       end subroutine update_screen_params
@@ -131,7 +129,7 @@ c     ------------------------------------------------------------------
       result = SDL_RenderClear(rnd)
 
       call update_screen_params(rnd)
-c     call debug_fill_field()
+      call debug_fill_field()
       call render_fld(rnd)
 
       call SDL_RenderPresent(rnd)

@@ -17,7 +17,9 @@ c     ------------------------------------------------------------------
 
 c     Init SDL with (SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER)
       sdlres = SDL_Init(8225)
-      window = SDL_CreateWindow('Team Fortris', 100, 100, 1024, 768, 0)
+c     (SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI) = 0x00002020 = 8224
+      window = SDL_CreateWindow('Team Fortris', 100, 100, 
+     +                          1024, 768, 8224)
 c     Init renderer with SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
       rnd = SDL_CreateRenderer(window, -1, 6);
 
