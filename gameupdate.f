@@ -100,10 +100,11 @@ c       Shape of the tetrominos. Add more later.
      +              0,0,0,0,0/
 
         tx = -2
-        ty = -2
  20     if (tx .le. 2) then
+          ty = -2
  30       if (ty .le. 2) then
             TetFld(ty, tx, player) = tetBlk(ty, tx, 1)
+            write (*,*) 'update!'
             ty = ty + 1
             goto 30
           endif

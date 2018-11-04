@@ -42,6 +42,8 @@ c     ------------------------------------------------------------------
         return
       endif
 
+      write(*,*) 'render!'
+
 c     Render rectangle
       result = SDL_SetRenderDrawColor(rnd,
      +  colors(1, blkCol),
@@ -62,7 +64,7 @@ c#######################################################################
       use iso_c_binding
       type(c_ptr) :: rnd
       include 'state.h'
-      integer :: x, y
+      integer :: x, y, player
 c     ------------------------------------------------------------------
       x = 1
  10   if (x .le. size(Fld, 2)) then
@@ -75,6 +77,27 @@ c     ------------------------------------------------------------------
         x = x + 1
         goto 10
       endif
+
+c     Render player tets
+      player = 1
+ 50   if (player .le. 2) then
+        x = -2
+ 30     if (x .le. 2) then
+          y = -2
+ 40       if (y .le. 2) then
+            call render_blk(rnd,
+     +            TetPos(2, player) + x, TetPos(1, player) + y,
+     +            TetFld(y, x, player))
+            y = y + 1
+            goto 40
+          endif
+          x = x + 1
+          goto 30
+        endif
+        player = player + 1
+        goto 50
+      endif
+
       end subroutine render_fld
 c#######################################################################
       subroutine update_screen_params(rnd)
