@@ -19,10 +19,10 @@ c#######################################################################
 c     Renders a single block
 c     Batching blocks of the same color would make this much more efficient,
 c     but for simplicity we do everything one by one every frame.
-      subroutine render_blk(rnd, x, y)
+      subroutine render_blk(rnd, x, y, blkCol)
       use sdl2
       type(c_ptr) :: rnd
-      integer :: x, y
+      integer :: x, y, blkCol
       include 'state.h'
       include 'screenstate.h'
       integer result
@@ -38,16 +38,16 @@ c     Colors for IOTSZJL, fix
      +            -1, 100, 0, -1,
      +            100, 100, 100, -1/
 c     ------------------------------------------------------------------
-      if (Fld(y, x) .eq. blkNON) then
+      if (blkCol .eq. blkNON) then
         return
       endif
 
 c     Render rectangle
       result = SDL_SetRenderDrawColor(rnd,
-     +  colors(1, Fld(y, x)),
-     +  colors(2, Fld(y, x)),
-     +  colors(3, Fld(y, x)),
-     +  colors(4, Fld(y, x)))
+     +  colors(1, blkCol),
+     +  colors(2, blkCol),
+     +  colors(3, blkCol),
+     +  colors(4, blkCol))
 
       rects(1)%x = (x-1) * BlkSz + FldTLX
       rects(1)%y = (y-1) * BlkSz + FldTLY
@@ -68,7 +68,7 @@ c     ------------------------------------------------------------------
  10   if (x .le. size(Fld, 2)) then
         y = 1
  20     if (y .le. size(Fld, 1)) then
-          call render_blk(rnd, x, y)
+          call render_blk(rnd, x, y, Fld(y,x))
           y = y + 1
           goto 20
         endif
