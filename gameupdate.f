@@ -94,7 +94,6 @@ c     ------------------------------------------------------------------
           ty = -2
  30       if (ty .le. 2) then
             TetFld(ty, tx, player) = tetBlk(ty, tx, 1)
-            write (*,*) 'update!'
             ty = ty + 1
             goto 30
           endif
@@ -113,10 +112,73 @@ c     ------------------------------------------------------------------
 
       end subroutine new_tet
 c#######################################################################
+      function check_tet(tet, x, y)
+        logical :: check_tet
+        integer :: x, y
+        integer :: tet(-2:2, -2:2)
+        integer :: tx, ty
+        include 'state.h'
+c     ------------------------------------------------------------------
+        tx = -2
+ 20     if (tx .le. 2) then
+        ty = -2
+ 30       if (ty .le. 2) then
+            if ((tet(ty, tx) .eq. 0)) then
+              goto 40
+            endif
+            if (y + ty .gt. size(Fld, 1)) then
+c            .or.
+c     +          y + ty .le. 0 .or.
+c     +          x + tx .gt. size(Fld, 2)
+c     +          x + tx .le. 0) then
+              check_tet = .false.
+              return
+            endif
+            if (Fld(y + ty, x + tx) .gt. 0) then
+              check_tet = .false.
+              return
+            endif
+ 40         ty = ty + 1
+            goto 30
+          endif
+          tx = tx + 1
+          goto 20
+        endif
+        check_tet = .true.
+      end function
+c#######################################################################
+      subroutine rotate_tet(player)
+        integer :: player
+      end subroutine rotate_tet
+c#######################################################################
+      subroutine arrive_tet(player)
+        integer :: player
+        integer :: tx, ty
+        include 'state.h'
+c     ------------------------------------------------------------------  
+        tx = -2
+ 20     if (tx .le. 2) then
+          ty = -2
+ 30       if (ty .le. 2) then
+            if (TetFld(ty, tx, player) .gt. 0) then
+              Fld(TetPos(1, player) + ty, TetPos(2, player) + tx) =
+     +            TetFld(ty, tx, player)
+            endif
+            ty = ty + 1
+            goto 30
+          endif
+          tx = tx + 1
+          goto 20
+        endif
+
+        call new_tet(player)
+      end subroutine arrive_tet
+c#######################################################################
       subroutine gameupdate(tkIdx)
         integer :: tkIdx
         include 'state.h'
         logical :: is_key_down
+        logical ::check_tet
         integer :: player
         integer :: x, y, tx, ty
 c     ------------------------------------------------------------------       
@@ -130,13 +192,17 @@ c         Updating?
 
             endif
 
-          if (BlkRot(player)) then
+            if (BlkRot(player)) then
+              call rotate_tet(player)
+            endif
 
-
-          endif
-
-            TetPos(2, player) = TetPos(2, player) + 3 - 2*player
-
+            x = TetPos(2, player) + 3 - 2*player
+            if (check_tet(TetFld(:,:,player),
+     +                    x, TetPos(1, player))) then
+              TetPos(2, player) = x
+            else
+              call arrive_tet(player)
+            endif
 c           Reset input
             BlkMov(player) = 0
             BlkSpd(player) = .false.

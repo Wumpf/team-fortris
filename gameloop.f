@@ -38,6 +38,8 @@ c         Quit received
           goto 20
         endif
 
+        call input_update()
+
 c       Determine whether it is time to do a tick
         call cpu_time(tCur)
         if (tCur - tLstTk .ge. tkLen) then 
