@@ -16,22 +16,17 @@ c     ------------------------------------------------------------------
       endif
       end subroutine debug_fill_field
 c#######################################################################
-      subroutine render_field(rnd)
+c     Renders a single block
+c     Batching blocks of the same color would make this much more efficient,
+c     but for simplicity we do everything one by one every frame.
+      subroutine render_blk(rnd, x, y)
       use iso_c_binding
       use sdl2
       type(c_ptr) :: rnd
-
+      integer :: x, y
       include 'state.h'
-
       integer result
       type(SDL_Rect) rects(1)
-
-c     Block size in pixels
-      integer :: RectSz
-      parameter(RectSz = 30)
-
-      integer :: x, y, blkCol
-
 c     Colors for IOTSZJL, fix
       integer(1) colors(4, 8)
       data colors/-1, 0, -1, -1,
@@ -42,43 +37,51 @@ c     Colors for IOTSZJL, fix
      +            0, 0, -1, -1,
      +            -1, 100, 0, -1,
      +            100, 100, 100, -1/
+
+      integer RectSz
+      parameter(RectSz = 20)  ! todo: get dynamically
+c     ------------------------------------------------------------------
+      if (Fld(y, x) .eq. blkNON) then
+        return
+      endif
+
+c     Render rectangle
+      result = SDL_SetRenderDrawColor(rnd,
+     +  colors(1, Fld(y, x)),
+     +  colors(2, Fld(y, x)),
+     +  colors(3, Fld(y, x)),
+     +  colors(4, Fld(y, x)))
+  
+      rects(1)%x = (x-1) * RectSz
+      rects(1)%y = (y-1) * RectSz
+      rects(1)%w = RectSz
+      rects(1)%h = RectSz
+
+      result = SDL_RenderFillRects(rnd, rects, 1)
+
+      end subroutine
+c#######################################################################
+      subroutine render_fld(rnd)
+      use iso_c_binding
+      type(c_ptr) :: rnd
+      include 'state.h'
+      integer :: x, y
 c     ------------------------------------------------------------------
 
       call debug_fill_field()
 
-c     Loop through x,y and render blocks
       x = 1
- 10   y = 1
- 20   blkCol = Fld(y, x)
-
-c     If background, don't render anything
-      if (blkCol .ne. 0) then
-  
-c       Render rectangle
-        result = SDL_SetRenderDrawColor(rnd,
-     +    colors(1, blkCol),
-     +    colors(2, blkCol),
-     +    colors(3, blkCol),
-     +    colors(4, blkCol))
-  
-        rects(1)%x = (x-1) * RectSz
-        rects(1)%y = (y-1) * RectSz
-        rects(1)%w = RectSz
-        rects(1)%h = RectSz
-
-        result = SDL_RenderFillRects(rnd, rects, 1)
-       endif
-
-      y = y + 1
-      if (y .le. size(Fld, 1)) then
-        goto 20
-      endif
-
-      x = x + 1
-      if (x .le. size(Fld, 2)) then
+ 10   if (x .le. size(Fld, 2)) then
+        y = 1
+ 20     if (y .le. size(Fld, 1)) then
+          call render_blk(rnd, x, y)
+          y = y + 1
+          goto 20
+        endif
+        x = x + 1
         goto 10
       endif
-      end subroutine render_field
+      end subroutine render_fld
 c#######################################################################
       subroutine render(rnd, tkIdx)
       use iso_c_binding
@@ -94,7 +97,7 @@ c     ------------------------------------------------------------------
      +    bgCol(1), bgCol(2), bgCol(3), bgCol(4))
       result = SDL_RenderClear(rnd)
 
-      call render_field(rnd)
+      call render_fld(rnd)
 
       call SDL_RenderPresent(rnd)
       end subroutine render
