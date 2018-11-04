@@ -99,6 +99,16 @@
           integer(c_int) :: SDL_SetRenderDrawColor
         end function SDL_SetRenderDrawColor
 
+        function SDL_GetRendererOutputSize(renderer, w, h)
+     +      bind(c, name='SDL_GetRendererOutputSize')
+          use iso_c_binding
+          import :: SDL_Rect
+          type(c_ptr), value :: renderer
+          integer(c_int), intent(out) :: w
+          integer(c_int), intent(out) :: h
+          integer(c_int) :: SDL_GetRendererOutputSize
+        end function SDL_GetRendererOutputSize
+
 c       For scan code lookup check https://www.libsdl.org/tmp/SDL/include/SDL_scancode.h
         function SDL_GetKeyboardState(numkeys)
      +       bind(c, name='SDL_GetKeyboardState')

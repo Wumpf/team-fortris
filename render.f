@@ -20,7 +20,6 @@ c     Renders a single block
 c     Batching blocks of the same color would make this much more efficient,
 c     but for simplicity we do everything one by one every frame.
       subroutine render_blk(rnd, x, y)
-      use iso_c_binding
       use sdl2
       type(c_ptr) :: rnd
       integer :: x, y
@@ -80,21 +79,23 @@ c     ------------------------------------------------------------------
 
 c#######################################################################
       subroutine update_screen_params(rnd)
-      use iso_c_binding
       use sdl2
       type(c_ptr) :: rnd
+      include 'state.h'
       include 'screenstate.h'
+      integer result, w, h
+      integer fldSzX, fldSzY
 c     ------------------------------------------------------------------
+      fldSzX = size(Fld, 2)
+      fldSzY = size(Fld, 1)
+      result = SDL_GetRendererOutputSize(rnd, w, h)
 
-c     TODO
-      FldTLX = 10
-      FldTLY = 10
-      BlkSz = 20
-
+      BlkSz = min(w / fldSzX, w / fldSzY)
+      FldTLX = (w - fldSzX * BlkSz) / 2
+      FldTLY = (h - fldSzY * BlkSz) / 2
       end subroutine update_screen_params
 c#######################################################################
       subroutine render(rnd, tkIdx)
-      use iso_c_binding
       use sdl2
       type(c_ptr) :: rnd
       integer :: tkIdx
