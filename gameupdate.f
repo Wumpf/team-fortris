@@ -24,10 +24,11 @@ c     ------------------------------------------------------------------
  10     if (x .le. size(Fld, 2)) then
           y = 1
  20       if (y .le. size(Fld, 1)) then
-            Fld(y, x) = 0
+            Fld(y, x) = blkNON
 
-            if (x == int(size(Fld, 2)/2) + 1) then
-                  Fld(y, x) = 8
+            if ((x .eq. int(size(Fld, 2)/2) + 1) .or.
+     +          (y .eq. 1) .or. (y .eq. size(Fld, 1))) then
+                  Fld(y, x) = blkFIX
             endif
             y = y + 1
             goto 20
@@ -282,6 +283,4 @@ c           Reset input
           player = player + 1
           goto 10
         endif
-
-        Fld(1,1) = 4
       end subroutine gameupdate
