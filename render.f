@@ -110,18 +110,6 @@ c#######################################################################
       include 'state.h'
       integer :: x, y, player
 c     ------------------------------------------------------------------
-      x = 1
- 10   if (x .le. size(Fld, 2)) then
-        y = 1
- 20     if (y .le. size(Fld, 1)) then
-          call render_blk(rnd, x, y, Fld(y,x))
-          y = y + 1
-          goto 20
-        endif
-        x = x + 1
-        goto 10
-      endif
-
 c     Render player tets
       player = 1
  50   if (player .le. 2) then
@@ -140,6 +128,19 @@ c     Render player tets
         endif
         player = player + 1
         goto 50
+      endif
+
+c     Render field
+      x = 1
+ 10   if (x .le. size(Fld, 2)) then
+        y = 1
+ 20     if (y .le. size(Fld, 1)) then
+          call render_blk(rnd, x, y, Fld(y,x))
+          y = y + 1
+          goto 20
+        endif
+        x = x + 1
+        goto 10
       endif
 
       end subroutine render_fld

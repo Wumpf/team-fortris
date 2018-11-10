@@ -167,10 +167,42 @@ c#######################################################################
       subroutine lose_player(player)
         integer :: player
         include 'state.h'
+        integer :: tx, ty, midX, midY
+        integer :: pokal(-3:3, -3:3)
+        data pokal/0,0,0,0,0,0,0,
+     +             0,2,2,2,2,2,0,
+     +             0,2,2,2,2,2,0,
+     +             0,0,2,2,2,0,0,
+     +             0,0,0,2,0,0,0,
+     +             0,0,2,2,2,0,0,
+     +             0,0,0,0,0,0,0/
 c     ------------------------------------------------------------------
-        State = stWin2 - player + 1
-        tkPaus = 15
+        if (player .eq. 1) then
+          midX = size(Fld, 2) / 4 * 3 + 2
+        else
+          midX = size(Fld, 2) / 4 + 2
+        endif
+        midY = size(Fld, 1) / 2
 
+        tx = -3
+ 20     if (tx .le. 3) then
+          ty = -3
+ 30       if (ty .le. 3) then
+            if ((midY + ty .gt. 0) .and.
+     +          (midX + tx .gt. 0) .and.
+     +          (midY + ty .lt. size(Fld, 1)) .and.
+     +          (midX + tx .lt. size(Fld, 2))) then
+              Fld(midY + ty, midX + tx) = pokal(tx, ty)
+            endif
+            ty = ty + 1
+            goto 30
+          endif
+          tx = tx + 1
+          goto 20
+        endif
+        
+        State = stWin2 - player + 1
+        tkPaus = 20
       end subroutine lose_player
 c#######################################################################
       subroutine arrive_tet(player)
