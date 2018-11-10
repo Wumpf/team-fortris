@@ -144,11 +144,11 @@ c     ------------------------------------------------------------------
 
         if (player .eq. 1) then
           TetPos(1,1) = size(Fld, 1)/2 + 1
-          TetPos(2,1) = 3
+          TetPos(2,1) = 0
         endif
         if (player .eq. 2) then
           TetPos(1,2) = TetPos(1,1)
-          TetPos(2,2) = size(Fld, 2)-2
+          TetPos(2,2) = size(Fld, 2)
         endif
 
       end subroutine new_tet
@@ -164,13 +164,13 @@ c     ------------------------------------------------------------------
  20     if (tx .le. 2) then
         ty = -2
  30       if (ty .le. 2) then
-            if ((tet(ty, tx) .eq. 0)) then
+            if ((tet(ty, tx) .eq. 0) .or.
+     +          x + tx .gt. size(Fld, 2) .or.
+     +          x + tx .le. 0) then
               goto 40
             endif
             if (y + ty .gt. size(Fld, 1) .or.
-     +          y + ty .le. 0 .or.
-     +          x + tx .gt. size(Fld, 2) .or.
-     +          x + tx .le. 0) then
+     +          y + ty .le. 0 ) then
               check_tet = .false.
               return
             endif
@@ -206,9 +206,17 @@ c     ------------------------------------------------------------------
         endif
       end subroutine rotate_tet
 c#######################################################################
+      subroutine lose_player(player)
+        integer :: player
+        include 'state.h'
+c     ------------------------------------------------------------------
+        write(*,*) 'Player died: ', player
+
+      end subroutine lose_player
+c#######################################################################
       subroutine arrive_tet(player)
         integer :: player
-        integer :: tx, ty
+        integer :: tx, ty, px, py
         integer :: minX, maxX
         include 'state.h'
 c     ------------------------------------------------------------------  
@@ -219,6 +227,13 @@ c     ------------------------------------------------------------------
           ty = -2
  30       if (ty .le. 2) then
             if (TetFld(ty, tx, player) .gt. 0) then
+              px = TetPos(2, player) + tx
+              py = TetPos(1, player) + ty
+              if (px .gt. size(Fld, 2) .or.
+     +            px .le. 0) then
+                call lose_player(player)
+                goto 40
+              endif
               Fld(TetPos(1, player) + ty, TetPos(2, player) + tx) =
      +            TetFld(ty, tx, player)
               maxX = max(maxX, TetPos(2, player) + tx)
@@ -233,7 +248,7 @@ c     ------------------------------------------------------------------
 
         call check_for_fix_lines(minX, maxX)
         call new_tet(player)
-      end subroutine arrive_tet
+ 40   end subroutine arrive_tet
 
 c#######################################################################
       subroutine check_for_fix_lines(minX, maxX)
