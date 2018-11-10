@@ -8,10 +8,9 @@ c#######################################################################
       integer sdlres
 
       integer tkIdx
-      real tCur, tLstTk ! time at which the last tick occured
+      integer tCur, tLstTk, clkRt ! time at which the last tick occured
       real tkLen
-      parameter(tklen = 0.2) ! Tick duration in seconds
-
+      parameter(tkLen = 0.2) ! Tick duration in seconds
       external gameupdate, render, init_field
 c     ------------------------------------------------------------------
 
@@ -25,7 +24,8 @@ c     Init renderer with SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
 
       call init_field()
 
-      tLstTk = -1
+      call system_clock(tLstTk, clkRt)
+      tLstTk = tLstTk - tkLen * clkRt
       tkIdx = 0
 
 c     Gameloop & message pump
@@ -41,14 +41,15 @@ c         Quit received
         call input_update()
 
 c       Determine whether it is time to do a tick
-        call cpu_time(tCur)
-        if (tCur - tLstTk .ge. tkLen) then 
-          tLstTk = tLstTk + tkLen
+        call system_clock(tCur)
+        if (tCur - tLstTk .ge. tkLen * clkRt) then
+          tLstTk = tLstTk + tkLen * clkRt
           tkIdx = tkIdx + 1
           call gameupdate(tkIdx)
           call render(rnd, tkIdx)
         endif
 
+        call SDL_RenderPresent(rnd)
       goto 10
 
    30 call SDL_DestroyRenderer(rnd)

@@ -178,6 +178,5 @@ c     ------------------------------------------------------------------
 c      call debug_fill_field()
       call render_fld(rnd)
 
-      call SDL_RenderPresent(rnd)
       end subroutine render
 c#######################################################################
