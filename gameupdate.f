@@ -209,8 +209,11 @@ c#######################################################################
       subroutine arrive_tet(player)
         integer :: player
         integer :: tx, ty
+        integer :: minX, maxX
         include 'state.h'
 c     ------------------------------------------------------------------  
+        minX = 999
+        maxX = 0
         tx = -2
  20     if (tx .le. 2) then
           ty = -2
@@ -218,6 +221,8 @@ c     ------------------------------------------------------------------
             if (TetFld(ty, tx, player) .gt. 0) then
               Fld(TetPos(1, player) + ty, TetPos(2, player) + tx) =
      +            TetFld(ty, tx, player)
+              maxX = max(maxX, TetPos(2, player) + tx)
+              minX = min(minX, TetPos(2, player) + tx)
             endif
             ty = ty + 1
             goto 30
@@ -226,18 +231,18 @@ c     ------------------------------------------------------------------
           goto 20
         endif
 
-        call check_for_fix_lines(player)
+        call check_for_fix_lines(minX, maxX)
         call new_tet(player)
       end subroutine arrive_tet
 
 c#######################################################################
-      subroutine check_for_fix_lines(player)
-        integer :: player
+      subroutine check_for_fix_lines(minX, maxX)
+        integer :: minX, maxX
         integer :: tx, ty
         include 'state.h'
 c     ------------------------------------------------------------------  
-        tx = TetPos(2, player)-2
- 20     if (tx .le. TetPos(2, player)+2) then
+        tx = minX
+ 20     if (tx .le. maxX) then
           ty = 2
  30       if (ty .le. size(Fld, 1) - 1) then
             if (Fld(ty, tx) .eq. blkNON) then
@@ -249,7 +254,7 @@ c     ------------------------------------------------------------------
 
           ty = 2
  50       if (ty .le. size(Fld, 1) - 1) then
-            Fld(ty, tx) = blkFIX
+            Fld(ty, tx) = blkBli
             ty = ty + 1
             goto 50
           endif

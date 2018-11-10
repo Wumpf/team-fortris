@@ -45,8 +45,9 @@ c     but for simplicity we do everything one by one every frame.
       include 'screenstate.h'
       integer result
       type(SDL_Rect) rects(1)
+      integer colUse(4)
 c     Colors for IOTSZJL, fix
-      integer colors(4, 8)
+      integer colors(4, 9)
       data colors/240, 5, 240, 240,
      +            240, 240, 5, 240,
      +            127, 5, 240, 240,
@@ -54,7 +55,8 @@ c     Colors for IOTSZJL, fix
      +            240, 5, 5, 240,
      +            5, 5, 240, 240,
      +            240, 127, 5, 240,
-     +            127, 127, 127, 240/
+     +            127, 127, 127, 240, ! blkFIX
+     +            200, 200, 200, 240/ ! blkBli
       integer(1) colorB(4)
       real border
       parameter(border = 0.2)
@@ -63,8 +65,15 @@ c     ------------------------------------------------------------------
         return
       endif
 
+      if (blkCol .gt. blkFIX) then
+        colUse = colors(:, blkFIX + mod(blkCol - blkFIX, 2))
+        blkCol = blkCol - 1
+      else
+        colUse = colors(:, blkCol)
+      endif
+
 c     "normal" border, bottom left
-      call to_byte(colors(:, blkCol), colorB, 4)
+      call to_byte(colUse, colorB, 4)
       result = SDL_SetRenderDrawColor(rnd,
      +  colorB(1), colorB(2), colorB(3), colorB(4))
       rects(1)%x = (x-1) * BlkSz + FldTLX
@@ -74,7 +83,7 @@ c     "normal" border, bottom left
       result = SDL_RenderFillRects(rnd, rects, 1)
 
 c     Dark border, top right
-      call to_byte(int(colors(:, blkCol) * 0.8), colorB, 4)
+      call to_byte(int(colUse * 0.8), colorB, 4)
       result = SDL_SetRenderDrawColor(rnd,
      +  colorB(1), colorB(2), colorB(3), colorB(4))
       rects(1)%w = int(BlkSz * (1.0 - border))
@@ -84,7 +93,7 @@ c     Dark border, top right
       result = SDL_RenderFillRects(rnd, rects, 1)
 
 c     Bright middle
-      call to_byte(int(colors(:, blkCol) + 60), colorB, 4)
+      call to_byte(int(colUse + 60), colorB, 4)
       result = SDL_SetRenderDrawColor(rnd,
      +  colorB(1), colorB(2), colorB(3), colorB(4))
       rects(1)%w = int(BlkSz * (1.0 - border * 2))
