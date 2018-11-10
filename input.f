@@ -1,7 +1,10 @@
 c#######################################################################
-      subroutine input_update()
+      subroutine input_update(tkIdx)
         include 'input.h'
+        include 'state.h'
+        integer :: tkIdx, tkDiff
         logical :: is_key_down
+        integer :: player
 c     ------------------------------------------------------------------
 c     Rotating
         if (is_key_down(4)) then
@@ -34,6 +37,26 @@ c     Up/down
         endif
         if (is_key_down(81)) then
           BlkMov(2) = 1
+        endif
+
+c     Skip update step 0, 2-5
+        player = 1
+ 10     if (player .le. 2) then
+          tkDiff = tkIdx - MovTk(player)
+          if (BlkMov(player) .ne. 0) then
+            if (MovTk(player) .eq. -1) then
+              MovTk(player) = tkIdx
+            endif
+
+            if (tkDiff .le. 3 .and. tkDiff .ne. 1) then
+              BlkMov(player) = 0
+            endif
+          else
+            MovTk(player) = -1
+          endif
+          
+          player = player + 1
+          goto 10
         endif
 
 c     Speedup

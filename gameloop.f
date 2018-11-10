@@ -38,7 +38,7 @@ c         Quit received
           goto 20
         endif
 
-        call input_update()
+        call input_update(tkIdx)
 
 c       Determine whether it is time to do a tick
         call system_clock(tCur)
