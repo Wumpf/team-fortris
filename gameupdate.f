@@ -226,8 +226,38 @@ c     ------------------------------------------------------------------
           goto 20
         endif
 
+        call check_for_fix_lines(player)
         call new_tet(player)
       end subroutine arrive_tet
+
+c#######################################################################
+      subroutine check_for_fix_lines(player)
+        integer :: player
+        integer :: tx, ty
+        include 'state.h'
+c     ------------------------------------------------------------------  
+        tx = TetPos(2, player)-2
+ 20     if (tx .le. TetPos(2, player)+2) then
+          ty = 2
+ 30       if (ty .le. size(Fld, 1) - 1) then
+            if (Fld(ty, tx) .eq. blkNON) then
+              goto 40
+            endif
+            ty = ty + 1
+            goto 30
+          endif
+
+          ty = 2
+ 50       if (ty .le. size(Fld, 1) - 1) then
+            Fld(ty, tx) = blkFIX
+            ty = ty + 1
+            goto 50
+          endif
+
+ 40       tx = tx + 1
+          goto 20
+        endif
+      end subroutine check_for_fix_lines
 c#######################################################################
       subroutine gameupdate(tkIdx)
         integer :: tkIdx
