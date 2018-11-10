@@ -25,7 +25,7 @@ c     Init renderer with SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
       call init_field()
 
       call system_clock(tLstTk, clkRt)
-      tLstTk = tLstTk - tkLen * clkRt
+      tLstTk = int(tLstTk - tkLen * clkRt)
       tkIdx = 0
 
 c     Gameloop & message pump
@@ -43,10 +43,10 @@ c         Quit received
 c       Determine whether it is time to do a tick
         call system_clock(tCur)
         if (tCur - tLstTk .ge. tkLen * clkRt) then
-          tLstTk = tLstTk + tkLen * clkRt
+          tLstTk = int(tLstTk + tkLen * clkRt)
           tkIdx = tkIdx + 1
           call gameupdate(tkIdx)
-          call render(rnd, tkIdx)
+          call render(rnd)
         endif
 
         call SDL_RenderPresent(rnd)

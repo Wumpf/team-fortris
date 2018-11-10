@@ -161,10 +161,9 @@ c     ------------------------------------------------------------------
       FldTLY = (h - fldSzY * BlkSz) / 2
       end subroutine update_screen_params
 c#######################################################################
-      subroutine render(rnd, tkIdx)
+      subroutine render(rnd)
       use sdl2
       type(c_ptr) :: rnd
-      integer :: tkIdx
 
       integer result
       integer(1) bgCol(4)
