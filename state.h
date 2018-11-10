@@ -2,7 +2,12 @@
 c     Last index is the player id 
       integer :: TetPos(2,2)
       integer :: TetFld(-2:2, -2:2, 2)
-      common /gState/ Fld, TetPos, TetFld
+      integer :: tkPaus
+      integer :: State
+      common /gState/ Fld, TetPos, TetFld, tkPaus, State
+
+      integer :: stPlay, stWin1, stWin2, stShft, stPaus
+      parameter(stPlay=0, stWin1=1, stWin2=2, stShft=3, stPaus=4)
 
 c     Block enum
       integer :: blkNON,

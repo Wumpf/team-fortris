@@ -19,14 +19,19 @@ c     ------------------------------------------------------------------
 c#######################################################################
       subroutine init_field()
         include 'state.h'
-        integer :: x=1, y=1
+        integer :: x, y
 c     ------------------------------------------------------------------
+        tkPaus = 0
+        State = stPlay
+        x = 1
+        y = 1
+
  10     if (x .le. size(Fld, 2)) then
           y = 1
  20       if (y .le. size(Fld, 1)) then
             Fld(y, x) = blkNON
 
-            if ((x .eq. int(size(Fld, 2)/2) + 1) .or.
+            if ((x .eq. size(Fld, 2) / 2 + 1) .or.
      +          (y .eq. 1) .or. (y .eq. size(Fld, 1))) then
                   Fld(y, x) = blkFIX
             endif
@@ -39,7 +44,6 @@ c     ------------------------------------------------------------------
 
         call new_tet(1)
         call new_tet(2)
-
       end subroutine init_field
 c#######################################################################
       subroutine new_tet(player)
@@ -164,7 +168,8 @@ c#######################################################################
         integer :: player
         include 'state.h'
 c     ------------------------------------------------------------------
-        write(*,*) 'Player died: ', player
+        State = stWin2 - player + 1
+        tkPaus = 15
 
       end subroutine lose_player
 c#######################################################################
@@ -237,12 +242,24 @@ c#######################################################################
         integer :: tkIdx
         include 'state.h'
         include 'input.h'
-        logical :: is_key_down
         logical :: check_tet
         integer :: player
-        integer :: x, y, tx, ty
+        integer :: x
         integer :: rotTet(-2:2, -2:2)
-c     ------------------------------------------------------------------       
+c     ------------------------------------------------------------------
+        if (State .ne. stPlay) then
+          tkPaus = tkPaus - 1
+          tkIdx = tkIdx - 1
+          if (tkPaus .eq. 0) then
+            if ((State .eq. stWin1) .or. (State .eq. stWin2)) then
+              call init_field()
+            endif
+            State = stPlay
+          else
+            return
+          endif
+        endif
+
         player = 1
  10     if (player .le. 2) then
 
