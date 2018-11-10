@@ -1,4 +1,4 @@
-      integer :: Fld(8, 33)
+      integer :: Fld(15, 33)
 c     Last index is the player id 
       integer :: TetPos(2,2)
       integer :: TetFld(-2:2, -2:2, 2)

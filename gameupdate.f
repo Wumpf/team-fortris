@@ -315,7 +315,7 @@ c     ------------------------------------------------------------------
           endif
 
 c         Updating?
-          if ((mod(tkIdx, 2) .eq. 0) .or. BlkSpd(player)) then
+          if ((mod(tkIdx, 3) .eq. 0) .or. BlkSpd(player)) then
             if (TetPos(1, player) - 2 .ge. 1 .and.
      +          TetPos(1, player) + 2 .le. size(Fld, 1)) then
 

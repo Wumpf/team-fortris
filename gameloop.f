@@ -10,7 +10,7 @@ c#######################################################################
       integer tkIdx
       integer tCur, tLstTk, clkRt ! time at which the last tick occured
       real tkLen
-      parameter(tkLen = 0.2) ! Tick duration in seconds
+      parameter(tkLen = 0.1) ! Tick duration in seconds
       external gameupdate, render, init_field
 c     ------------------------------------------------------------------
 
