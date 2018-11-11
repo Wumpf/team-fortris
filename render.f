@@ -47,7 +47,7 @@ c     but for simplicity we do everything one by one every frame.
       type(SDL_Rect) rects(1)
       integer colUse(4)
 c     Colors for IOTSZJL, fix
-      integer colors(4, 9)
+      integer colors(4, 11)
       data colors/240, 5, 240, 240,
      +            240, 240, 5, 240,
      +            127, 5, 240, 240,
@@ -56,7 +56,9 @@ c     Colors for IOTSZJL, fix
      +            5, 5, 240, 240,
      +            240, 127, 5, 240,
      +            127, 127, 127, 240, ! blkFIX
-     +            200, 200, 200, 240/ ! blkBli
+     +            120, 100, 100, 240, ! blkMvL
+     +            100, 120, 100, 240, ! blkMvR
+     +            80, 80, 80, 80/ ! blkMvN
       integer(1) colorB(4)
       real border
       parameter(border = 0.2)
@@ -65,12 +67,7 @@ c     ------------------------------------------------------------------
         return
       endif
 
-      if (blkCol .gt. blkFIX) then
-        colUse = colors(:, blkFIX + mod(blkCol - blkFIX, 2))
-        blkCol = blkCol - 1
-      else
-        colUse = colors(:, blkCol)
-      endif
+      colUse = colors(:, blkCol)
 
 c     "normal" border, bottom left
       call to_byte(colUse, colorB, 4)

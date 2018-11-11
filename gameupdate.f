@@ -237,13 +237,13 @@ c     ------------------------------------------------------------------
           goto 20
         endif
 
-        call check_for_fix_lines(minX, maxX)
+        call check_for_fix_lines(minX, maxX, player)
         call new_tet(player)
  40   end subroutine arrive_tet
 
 c#######################################################################
-      subroutine check_for_fix_lines(minX, maxX)
-        integer :: minX, maxX
+      subroutine check_for_fix_lines(minX, maxX, player)
+        integer :: minX, maxX, player
         integer :: tx, ty
         include 'state.h'
 c     ------------------------------------------------------------------  
@@ -260,15 +260,81 @@ c     ------------------------------------------------------------------
 
           ty = 2
  50       if (ty .le. size(Fld, 1) - 1) then
-            Fld(ty, tx) = blkBli
+            Fld(ty, tx) = blkMvR + 1 - player
             ty = ty + 1
             goto 50
           endif
+c         Move player tet a and go to shift state
+          if (player .eq. 1) then
+            TetPos(2, 2) = TetPos(2, 2) + 1
+          else
+            TetPos(2, 1) = TetPos(2, 1) - 1
+          endif
+          State = stShft
+          tkPaus = 2
 
  40       tx = tx + 1
           goto 20
         endif
       end subroutine check_for_fix_lines
+c#######################################################################
+      subroutine resolve_line_shifts()
+        integer :: tx, ty, tx2
+        integer :: sx
+        include 'state.h'
+        logical :: anyMv
+c     ------------------------------------------------------------------
+        sx = size(Fld, 2)
+        ty = tkPaus
+
+c       Traverse middle to right
+        tx = sx / 2 + 1
+ 20     if (tx .lt. sx) then
+          if (Fld(ty, tx) .eq. blkMvL) then
+            anyMv = .true.
+            if (tx - 1 .eq. sx / 2) then
+c             When we reached the middle shift entire horizontal line to the left
+              Fld(ty, tx) = blkMvN
+              Fld(ty, 1:sx-1) = Fld(ty, 2:sx)
+              Fld(ty, sx) = blkNON
+            else
+c             Shift to the left towards the middle line
+              Fld(ty, tx) = Fld(ty, tx - 1)
+              Fld(ty, tx - 1) = blkMvL
+            endif
+          endif
+          tx = tx + 1
+          goto 20
+        endif
+
+c       Traverse middle to left
+        tx = sx / 2 + 1
+ 50     if (tx .gt. 1) then
+          if (Fld(ty, tx) .eq. blkMvR) then
+          anyMv = .true.
+            if (tx + 1 .eq. sx / 2 + 2) then
+c               When we reached the middle shift entire horizontal line to the right
+              Fld(ty, tx) = blkMvN
+              Fld(ty, 2:sx) = Fld(ty, 1:sx-1)
+              Fld(ty, 1) = blkNON
+            else
+c               Shift to the right towards the middle line
+              Fld(ty, tx) = Fld(ty, tx + 1)
+              Fld(ty, tx + 1) = blkMvR
+            endif
+          endif
+          tx = tx - 1
+          goto 50
+        endif
+
+c       Move y further down if nothing was moved. Continue game when we're done.
+        if (.not. anyMv) then
+          tkPaus = tkPaus + 1
+          if (tkPaus .eq. size(Fld, 1)) then
+            State = stPlay
+          endif
+        endif
+      end subroutine resolve_line_shifts
 c#######################################################################
       subroutine gameupdate(tkIdx)
         integer :: tkIdx
@@ -279,7 +345,10 @@ c#######################################################################
         integer :: x
         integer :: rotTet(-2:2, -2:2)
 c     ------------------------------------------------------------------
-        if (State .ne. stPlay) then
+        if (State .eq. stShft) then
+          call resolve_line_shifts()
+          return
+        elseif (State .ne. stPlay) then
           tkPaus = tkPaus - 1
           tkIdx = tkIdx - 1
           if (tkPaus .eq. 0) then
